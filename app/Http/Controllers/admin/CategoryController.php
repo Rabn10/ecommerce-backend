@@ -33,7 +33,7 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => $request->name,
-            'status' => $request->status
+            'status' => (int) $request->status
         ]);
 
         return response()->json([
