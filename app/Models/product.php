@@ -18,7 +18,8 @@ class product extends Model
         'quantity',
         'sku',
         'status',
-        'is_featured'
+        'is_featured',
+        'image'
     ];
 
      public function category()
