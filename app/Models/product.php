@@ -31,4 +31,14 @@ class product extends Model
     {
         return $this->belongsTo(Brand::class);
     }
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        if($this->image == null) {
+            return "";
+        }
+        return asset('/uploads/products/small/' . $this->image);
+    }
 }
