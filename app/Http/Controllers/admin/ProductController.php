@@ -15,7 +15,7 @@ class ProductController extends Controller
 {   
     public function index()
     {
-        $products = Product::orderBy('created_at', 'desc')->get();
+        $products = Product::orderBy('created_at', 'desc')->with('product_images')->get();
 
         return response()->json([
             'status' => 200,
@@ -148,7 +148,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('product_images')->findOrFail($id);
 
         if(!$product) {
             return response()->json([
@@ -179,6 +179,62 @@ class ProductController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Product deleted successfully'
+        ], 200);
+    }
+
+    public function saveProductImage(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        
+
+        $image = $request->file('image');
+        $imageName = $request->product_id . '-' . time() . '.' . $image->getClientOriginalExtension();
+
+
+        //Large Thumbnail
+        $manager = new ImageManager(Driver::class);
+        $img = $manager->read($image->getPathName());
+        $img->scaleDown(1200);
+        $img->save(public_path('uploads/products/large/' . $imageName));
+
+        //Small Thumbnail
+        $manager = new ImageManager(Driver::class);
+        $img = $manager->read($image->getPathName());
+        $img->coverDown(400, 460);
+        $img->save(public_path('uploads/products/small/' . $imageName));
+
+        //Insert a record in product_image table
+        $productImage = new ProductImage();
+        $productImage->image = $imageName;
+        $productImage->product_id = $request->product_id;
+        $productImage->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Image uploaded successfully',
+            'data' => $productImage
+        ], 200);
+    }
+
+    public function updateDefalutImage(Request $request)
+    {
+        $product = Product::findOrFail($request->product_id);
+        $product->image = $request->image;
+        $product->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Defalut image updated successfully'
         ], 200);
     }
 }

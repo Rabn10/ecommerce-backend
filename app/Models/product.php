@@ -41,4 +41,9 @@ class product extends Model
         }
         return asset('/uploads/products/small/' . $this->image);
     }
+
+    function product_images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
 }
