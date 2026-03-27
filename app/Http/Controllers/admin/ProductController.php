@@ -10,12 +10,13 @@ use App\Models\TempImage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
 
 class ProductController extends Controller
 {   
     public function index()
     {
-        $products = Product::orderBy('created_at', 'desc')->with('product_images')->get();
+        $products = Product::orderBy('created_at', 'desc')->with(['product_images', 'product_sizes'])->get();
 
         return response()->json([
             'status' => 200,
@@ -55,6 +56,16 @@ class ProductController extends Controller
             'status' => $request->status,
             'is_featured' => $request->is_featured
         ]);
+
+        if(!empty($request->sizes)) {
+            foreach($request->sizes as $sizeId) {
+                $productSize = new ProductSize();
+                $productSize->size_id = $sizeId;
+                $productSize->product_id = $product->id;
+                $productSize->save();
+            }
+        }
+
 
         if(!empty($request->gallery)) {
             foreach($request->gallery as $key => $tempImageId) {
@@ -139,6 +150,16 @@ class ProductController extends Controller
             'is_featured' => $request->is_featured
         ]);
 
+        if(!empty($request->sizes)) {
+           $productSizes = ProductSize::where('product_id', $product->id)->delete();
+            foreach($request->sizes as $sizeId) {
+                $productSize = new ProductSize();
+                $productSize->size_id = $sizeId;
+                $productSize->product_id = $product->id;
+                $productSize->save();
+            }
+        }
+
         return response()->json([
             'status' => 200,
             'data' => $product,
@@ -148,7 +169,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with('product_images')->findOrFail($id);
+        $product = Product::with(['product_images', 'product_sizes'])->findOrFail($id);
 
         if(!$product) {
             return response()->json([
@@ -157,9 +178,12 @@ class ProductController extends Controller
             ], 404);
         }
 
+        $productSizes = $product->product_sizes()->pluck('size_id');
+
         return response()->json([
             'status' => 200,
-            'data' => $product
+            'data' => $product,
+            'productSizes' => $productSizes
         ], 200);
     }
 
