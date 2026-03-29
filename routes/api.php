@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\TempImageController;
+use App\Http\Controllers\front\ProductController as FrontProductController;
 
 
 
@@ -16,6 +17,9 @@ use App\Http\Controllers\admin\TempImageController;
 //})->middleware('auth:sanctum');
 
 Route::post('/admin/login', [AuthController::class, 'authenticate']);
+Route::get('get-latest-products', [FrontProductController::class, 'latestProducts']);
+Route::get('get-featured-products', [FrontProductController::class, 'featuredProducts']);
+
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('categories', CategoryController::class);
@@ -33,6 +37,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('change-product-default-image', [ProductController::class, 'updateDefalutImage']);
 
     Route::delete('delete-product-image/{id}', [ProductController::class, 'deleteProductImage']);
+    
 
     
 
