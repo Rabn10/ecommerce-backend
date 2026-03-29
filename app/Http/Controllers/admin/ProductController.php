@@ -11,6 +11,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
+use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {   
@@ -189,7 +190,7 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('product_images')->findOrFail($id);
 
         if(!$product) {
             return response()->json([
@@ -199,6 +200,14 @@ class ProductController extends Controller
         }
 
         $product->delete();
+
+        if($product->product_images) {
+            foreach($product->product_images as $productImage) {
+                File::delete(public_path('uploads/products/large/' . $productImage->image));
+                File::delete(public_path('uploads/products/small/' . $productImage->image));
+                //$productImage->delete();
+            }
+        }
 
         return response()->json([
             'status' => 200,
@@ -259,6 +268,28 @@ class ProductController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Defalut image updated successfully'
+        ], 200);
+    }
+
+    public function deleteProductImage($id)
+    {
+        $productImage = ProductImage::findOrFail($id);
+
+        if(!$productImage) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Image not found'
+            ], 404);
+        }
+
+        File::delete(public_path('uploads/products/large/' . $productImage->image));
+        File::delete(public_path('uploads/products/small/' . $productImage->image));
+
+        $productImage->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Image deleted successfully'
         ], 200);
     }
 }
