@@ -22,6 +22,8 @@ Route::get('get-featured-products', [FrontProductController::class, 'featuredPro
 Route::get('get-categories', [FrontProductController::class, 'getCategories']);
 Route::get('get-brands', [FrontProductController::class, 'getBrands']);
 Route::get('get-products', [FrontProductController::class, 'getProducts']);
+Route::get('get-product/{id}', [FrontProductController::class, 'getOneProduct']);
+
 
 
 

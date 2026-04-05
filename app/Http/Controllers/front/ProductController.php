@@ -97,4 +97,21 @@ class ProductController extends Controller
             'data' => $brands
         ], 200);
     }
+
+    public function getOneProduct($id)
+    {
+        $product = Product::with('product_images', 'product_sizes.size')->find($id);
+
+        if(!$product) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $product
+        ], 200);
+    }
 }
