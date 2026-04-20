@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\TempImageController;
 use App\Http\Controllers\front\ProductController as FrontProductController;
+use App\Http\Controllers\front\AuthController as userAuthController;
 
 
 
@@ -23,6 +24,10 @@ Route::get('get-categories', [FrontProductController::class, 'getCategories']);
 Route::get('get-brands', [FrontProductController::class, 'getBrands']);
 Route::get('get-products', [FrontProductController::class, 'getProducts']);
 Route::get('get-product/{id}', [FrontProductController::class, 'getOneProduct']);
+Route::post('register', [userAuthController::class, 'register']);
+Route::post('login', [userAuthController::class, 'authenticate']);
+
+
 
 
 
