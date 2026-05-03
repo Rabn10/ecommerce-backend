@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\TempImageController;
+use App\Http\Controllers\front\OrderController;
 use App\Http\Controllers\front\ProductController as FrontProductController;
 use App\Http\Controllers\front\AuthController as userAuthController;
 
@@ -28,12 +29,18 @@ Route::post('register', [userAuthController::class, 'register']);
 Route::post('login', [userAuthController::class, 'authenticate']);
 
 
+Route::group(['middleware' => ['auth:sanctum', 'checkUserRole']], function () {
+    Route::post('save-order', [OrderController::class, 'saveOrder']);
+});
 
 
 
 
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+
+
+
+Route::group(['middleware' => ['auth:sanctum', 'checkAdminRole']], function () {
     Route::resource('categories', CategoryController::class);
 
     Route::resource('brands', BrandController::class);
