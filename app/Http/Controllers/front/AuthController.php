@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
 
 class AuthController extends Controller
 {
@@ -70,5 +71,23 @@ class AuthController extends Controller
             'status' => 401,
             'errors' => 'Unauthorized'
         ], 401);
+    }
+
+    public function getOrderDetails($id, Request $request)
+    {
+        $order = Order::where(['user_id' => $request->user()->id, 'id' => $id])->with('items')->first();
+
+        if (!$order) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Order not found',
+                'data' => []
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $order
+        ], 200);
     }
 }
