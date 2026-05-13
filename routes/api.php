@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\TempImageController;
 use App\Http\Controllers\front\OrderController;
+use App\Http\Controllers\admin\OrderController as AdminOrderController;
 use App\Http\Controllers\front\ProductController as FrontProductController;
 use App\Http\Controllers\front\AuthController as userAuthController;
 
@@ -57,6 +58,11 @@ Route::group(['middleware' => ['auth:sanctum', 'checkAdminRole']], function () {
     Route::get('change-product-default-image', [ProductController::class, 'updateDefalutImage']);
 
     Route::delete('delete-product-image/{id}', [ProductController::class, 'deleteProductImage']);
+
+    Route::get('orders', [AdminOrderController::class, 'index']);
+    Route::get('orders/{id}', [AdminOrderController::class, 'detail']);
+
+
     
 
     
