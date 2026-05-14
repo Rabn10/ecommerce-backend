@@ -34,4 +34,26 @@ class OrderController extends Controller
             'data' => $order
         ]);
     }
+
+    public function updateOrder($id, Request $request)
+    {
+        $order = Order::find($id);
+
+        if(!$order) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Order not found'
+            ]);
+        }
+
+        $order->status = $request->status;
+        $order->payment_status = $request->payment_status;
+        $order->save();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $order,
+            'message' => 'Order updated successfully'
+        ]);
+    }
 }
