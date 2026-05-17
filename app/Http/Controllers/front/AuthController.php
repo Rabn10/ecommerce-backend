@@ -75,7 +75,7 @@ class AuthController extends Controller
 
     public function getOrderDetails($id, Request $request)
     {
-        $order = Order::where(['user_id' => $request->user()->id, 'id' => $id])->with('items')->first();
+        $order = Order::where(['user_id' => $request->user()->id, 'id' => $id])->with('items')->with('items.product')->first();
 
         if (!$order) {
             return response()->json([

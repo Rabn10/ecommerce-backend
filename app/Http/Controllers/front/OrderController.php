@@ -57,4 +57,13 @@ class OrderController extends Controller
 
         
     }
+
+    public function orders(Request $request) {
+        $orders = Order::where('user_id', $request->user()->id)->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $orders
+        ]);
+    }
 }
